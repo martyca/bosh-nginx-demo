@@ -1,0 +1,72 @@
+---
+name: nginx
+
+releases:
+- name: nginx
+  version: latest
+- name: haproxy
+  version: 8.6.1
+  url: https://github.com/cloudfoundry-incubator/haproxy-boshrelease/releases/download/v8.6.1/haproxy-8.6.1.tgz
+  sha1: 47f5a23d54998ad00e001ba9cd00879f8fb6f159
+
+stemcells:
+- alias: ubuntu
+  os: ubuntu-trusty
+  version: latest
+
+instance_groups:
+- name: nginx
+  instances: 2
+  azs: [ z1 ]
+  vm_type: micro
+  persistent_disk_type: 1G
+  stemcell: ubuntu
+  networks:
+  - name: default
+  jobs:
+  - name: nginx
+    release: nginx
+    properties:
+      nginx_conf: |
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+        events {
+          worker_connections  1024;
+        }
+        http {
+          include /var/vcap/packages/nginx/conf/mime.types;
+          default_type  application/octet-stream;
+          sendfile        on;
+          keepalive_timeout  65;
+          server_names_hash_bucket_size 64;
+          server {
+            server_name demo.automate-it.lab; # invalid value which will never trigger on a real hostname.
+            listen *:80;
+            location / {
+              root /var/vcap/store;
+            }
+            # FIXME: replace all occurrences of 'example.com' with your server's FQDN
+            access_log /var/vcap/sys/log/nginx/automate-it-access.log;
+            error_log /var/vcap/sys/log/nginx/automate-it-error.log;
+          }
+        }
+
+- name: haproxy
+  azs: [ z1 ]
+  instances: 1
+  vm_type: micro
+  stemcell: ubuntu
+  networks: [{name: default}]
+  jobs:
+  - name: haproxy
+    release: haproxy
+    properties:
+      ha_proxy:
+        backend_port: 80
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
