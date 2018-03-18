@@ -9,9 +9,13 @@ if you wish to replicate the demo you will want to do the following:
 1. install a bosh director on a vpshere instance. ive written a deployment assistent that can help with that:
 https://github.com/martyca/bosh-initiator
 2. install stemcells, preferably 2 one of which must be ubuntu version 3541.2 and the other must be ubuntu but newer, from http://bosh.cloudfoundry.org/stemcells/
-3. at the time of writing this demo the nginx release does not make proper use of "links" my colleague Christiaan Roeleveld has remedied this and his pull request has been merged, unfortunately there has not yet been a build released with this merge included. you can buid your own by cloning the nginx-release repository,
-https://github.com/cloudfoundry-community/nginx-release
-cd'ing into the repo dir, and building your own release by executing the following command:
+3. at the time of writing this demo the nginx release does not make proper use of "links" my colleague Christiaan Roeleveld has remedied this and his pull request has been merged, unfortunately there has not yet been a build released with this merge included. you can buid your own initiating the included nginx-release submodule.
+from within this repo run:
+```
+git submodule init 
+git submodule update
+```
+cd into nginx-release, and build your own release by executing the following command:
 ```
 bosh create-release --force --tarball=../nginx.tgz
 ```
