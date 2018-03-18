@@ -3,7 +3,7 @@ name: nginx
 
 releases:
 - name: nginx
-  version: latest
+  version: 1.12.2+dev.1
 - name: haproxy
   version: 8.6.1
   url: https://github.com/cloudfoundry-incubator/haproxy-boshrelease/releases/download/v8.6.1/haproxy-8.6.1.tgz
@@ -12,7 +12,7 @@ releases:
 stemcells:
 - alias: ubuntu
   os: ubuntu-trusty
-  version: latest
+  version: 3541.2
 
 instance_groups:
 - name: nginx
@@ -42,9 +42,9 @@ instance_groups:
           server {
             server_name demo.automate-it.lab; # invalid value which will never trigger on a real hostname.
             listen *:80;
-            location / {
-              root /var/vcap/store;
-            }
+            #location / {
+            #  root /var/vcap/store;
+            #}
             # FIXME: replace all occurrences of 'example.com' with your server's FQDN
             access_log /var/vcap/sys/log/nginx/automate-it-access.log;
             error_log /var/vcap/sys/log/nginx/automate-it-error.log;
